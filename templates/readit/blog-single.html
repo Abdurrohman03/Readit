@@ -1,0 +1,143 @@
+
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('{% static 'images/bg_1.jpg' %}');"
+         data-stellar-background-ratio="0.5">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate pb-5 text-center">
+                <h1 class="mb-3 bread">Blog Single</h1>
+                <p class="breadcrumbs"><span class="mr-2"><a href="index-2.html">Home <i
+                        class="ion-ios-arrow-forward"></i></a></span> <span class="mr-2"><a href="blog.html">Blog <i
+                        class="ion-ios-arrow-forward"></i></a></span> <span>Blog Single <i
+                        class="ion-ios-arrow-forward"></i></span></p>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="ftco-section ftco-degree-bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 ftco-animate">
+                <p class="mb-5">
+                    <img src="{{ object.image.url }}" alt="" class="img-fluid">
+                </p>
+                <h2 class="mb-3">{{ object.title }}</h2>
+                <p>{{ object.description|safe }}</p>
+                <div class="tag-widget post-tag-container mb-5 mt-5">
+                    <div class="tagcloud">
+                        {% for tag in object.tags.all %}
+                        <a href="{% url 'blog:list' %}?tag={{ tag.title }}#article_list" class="tag-cloud-link">{{ tag.title }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="about-author d-flex p-4 bg-light">
+                    {% if object.author.avatar %}
+                    <div class="bio mr-5">
+                        <img src="{{ object.author.avatar.url }}" alt="Image placeholder" style="width: 120px" class="img-fluid mb-4">
+                    </div>
+                    {% else %}
+                    <div class="bio mr-5">
+                        <img src="{% static 'images/user.png' %}" alt="Image placeholder" style="width: 120px" class="img-fluid mb-4">
+                    </div>
+                    {% endif %}
+                    <div class="desc">
+                        <h3>{{ object.author }}</h3>
+                        {% if object.author.bio %}
+                        <p>{{ object.author.bio }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="pt-5 mt-5" id="comments">
+                    <h3 class="mb-5">{{ object.comment_set.count }} Comments</h3>
+                    <ul class="comment-list">
+                        {% for comment in object.comment_set.all %}
+                        <li class="comment">
+                            <div class="vcard bio">
+                                {% if comment.author.avatar %}
+                                <img src="{{ comment.author.avatar.url }}" style="width:60px" alt="Image placeholder">
+                                {% else %}
+                                <img src="{% static 'images/user.png' %}" style="width:60px" alt="Image placeholder">
+                                {% endif %}
+                            </div>
+                            <div class="comment-body">
+                                <h3>{{ comment.author }}</h3>
+                                <div class="meta mb-3">{{ comment.created_date|date:'F d, Y' }} at {{ comment.created_date|date:'g:ia' }}</div>
+                                <p>{{ comment.description }}</p>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="comment-form-wrap pt-5" >
+                        <h3 class="mb-5">Leave a comment</h3>
+                        <form method="post" action="#comments" class="p-5 bg-light">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                {{ form.description }}
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Post Comment" class="btn py-3 px-4 btn-primary">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 sidebar pl-lg-5 ftco-animate">
+                <div class="sidebar-box">
+                    <form action="{% url 'blog:list' %}#article_list" class="search-form">
+                        <div class="form-group">
+                            <span class="icon icon-search"></span>
+                            <input type="search" class="form-control" name="search" placeholder="Type a keyword and hit enter">
+                        </div>
+                    </form>
+                </div>
+                <div class="sidebar-box ftco-animate">
+                    <div class="categories">
+                        <h3>Categories</h3>
+                        <ul>
+                            {% for category in categories %}
+                            <li><a href="{% url 'blog:list' %}?cat={{ category.title }}#article_list">{{ category.title }}<span class="ion-ios-arrow-forward"></span></a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="sidebar-box ftco-animate">
+                    <h3>Recent Blog</h3>
+                    {% for last_3 in last_3_articles %}
+                    <div class="block-21 mb-4 d-flex">
+                        <a class="blog-img mr-4" style="background-image: url({{ last_3.image.url }});"></a>
+                        <div class="text">
+
+                            <h3 class="heading"><a href="{% url 'blog:detail' last_3.id %}">{{ last_3.title }}</a></h3>
+                            <div class="meta">
+                                <div><a href="{% url 'blog:detail' last_3.id %}"><span class="icon-calendar"></span>{{ last_3.created_date|date:'F d, Y' }}</a></div>
+                                <div><a href="{% url 'blog:detail' last_3.id %}"><span class="icon-person"></span>{{ last_3.author }}</a></div>
+                                <div><a href="{% url 'blog:detail' last_3.id %}"><span class="icon-chat"></span> 19</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="sidebar-box ftco-animate">
+                    <h3>Tag Cloud</h3>
+                    <div class="tagcloud">
+                        {% for tag in tags %}
+                        <a href="{% url 'blog:list' %}?tag={{ tag.title }}#article_list" class="tag-cloud-link">{{ tag.title }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="sidebar-box ftco-animate">
+                    <h3>Paragraph</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus itaque, autem necessitatibus
+                        voluptate quod mollitia delectus aut, sunt placeat nam vero culpa sapiente consectetur
+                        similique, inventore eos fugit cupiditate numquam!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
